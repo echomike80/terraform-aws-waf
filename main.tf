@@ -22,6 +22,7 @@ locals {
 
 resource "aws_wafv2_web_acl" "this" {
   count         = var.enabled ? 1 : 0
+
   name          = var.prefix_web_acl_name != null ? format("%s%s", var.prefix_web_acl_name, var.name) : format("%s", var.name)
   scope         = var.scope
 
@@ -104,12 +105,53 @@ resource "aws_wafv2_web_acl" "this" {
 
 resource "aws_wafv2_web_acl_association" "this" {
   count         = var.enabled && var.create_alb_association && length(var.arn_list) > 0 ? length(var.arn_list) : 0
+
   resource_arn  = var.arn_list[count.index]
   web_acl_arn   = aws_wafv2_web_acl.this[0].arn
 }
 
+resource "aws_cloudwatch_log_group" "this" {
+  count = var.enabled && var.logging_enabled && var.logging_destination_type == "cloudwatch" ? 1 : 0
+
+  name              = var.prefix_web_acl_name != null ? format("aws-waf-logs-%s%s", var.prefix_web_acl_name, var.name) : format("aws-waf-logs-%s", var.name)
+  retention_in_days = var.logging_destination_retention
+  kms_key_id        = var.logging_destination_kms_key_arn != null ? var.logging_destination_kms_key_arn : null
+
+  tags  = var.tags
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "cloudwatch" {
+  count         = var.enabled && var.logging_enabled && var.logging_destination_type == "cloudwatch" ? 1 : 0
+
+  log_destination_configs = [aws_cloudwatch_log_group.this[0].arn]
+  resource_arn            = aws_wafv2_web_acl.this[0].arn
+
+  logging_filter {
+    default_behavior = "DROP"
+
+    filter {
+      behavior = "KEEP"
+
+      condition {
+        action_condition {
+          action = "BLOCK"
+        }
+      }
+
+      condition {
+        action_condition {
+          action = "COUNT"
+        }
+      }
+
+      requirement = "MEETS_ANY"
+    }
+  }
+}
+
 resource "aws_wafv2_ip_set" "this" {
   count         = var.enabled&& var.ip_whitelist_enabled && length(var.ip_set_list) > 0 ? length(var.ip_set_list) : 0
+
   name          = lookup(var.ip_set_list[count.index], "name", format("IPset-%s", count.index))
   scope         = var.scope
 
@@ -121,6 +163,7 @@ resource "aws_wafv2_ip_set" "this" {
 
 resource "aws_wafv2_rule_group" "ip_whitelist" {
   count       = var.enabled && var.ip_whitelist_enabled && length(var.ip_set_list) > 0 ? 1 : 0
+
   name        = var.prefix_ip_whitelist_rule_group_name != null ? format("%s%s-ip-whitelist", var.prefix_ip_whitelist_rule_group_name, var.name) : format("%s-ip-whitelist", var.name)
   scope       = var.scope
   capacity    = var.ip_whitelist_capacity

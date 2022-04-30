@@ -112,10 +112,12 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_wafv2_ip_set.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set) | resource |
 | [aws_wafv2_rule_group.ip_whitelist](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_rule_group) | resource |
 | [aws_wafv2_web_acl.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl) | resource |
 | [aws_wafv2_web_acl_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl_association) | resource |
+| [aws_wafv2_web_acl_logging_configuration.cloudwatch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl_logging_configuration) | resource |
 
 ## Inputs
 
@@ -130,6 +132,10 @@ No modules.
 | <a name="input_ip_whitelist_cloudwatch_metrics_enabled"></a> [ip\_whitelist\_cloudwatch\_metrics\_enabled](#input\_ip\_whitelist\_cloudwatch\_metrics\_enabled) | Whether to enabled the IP whitelist Cloudwatch metrics | `bool` | `true` | no |
 | <a name="input_ip_whitelist_enabled"></a> [ip\_whitelist\_enabled](#input\_ip\_whitelist\_enabled) | Whether to enabled the IP whitelist | `bool` | `false` | no |
 | <a name="input_ip_whitelist_sampled_requests_enabled"></a> [ip\_whitelist\_sampled\_requests\_enabled](#input\_ip\_whitelist\_sampled\_requests\_enabled) | Whether to enabled the IP whitelist sample requests | `bool` | `true` | no |
+| <a name="input_logging_destination_kms_key_arn"></a> [logging\_destination\_kms\_key\_arn](#input\_logging\_destination\_kms\_key\_arn) | The KMS key id for encrypting the logging destination | `string` | `null` | no |
+| <a name="input_logging_destination_retention"></a> [logging\_destination\_retention](#input\_logging\_destination\_retention) | Number of days to keep the logs | `number` | `14` | no |
+| <a name="input_logging_destination_type"></a> [logging\_destination\_type](#input\_logging\_destination\_type) | The Amazon Kinesis Data Firehose ('kinesis'), Cloudwatch Log log group ('cloudwatch'), or S3 bucket('s3') that you want to associate with the Web ACL | `string` | `"cloudwatch"` | no |
+| <a name="input_logging_enabled"></a> [logging\_enabled](#input\_logging\_enabled) | A boolean flag to enable/disable Web ACL logging | `bool` | `false` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name to be used on all resources as prefix | `string` | n/a | yes |
 | <a name="input_prefix_ip_whitelist_metric_name"></a> [prefix\_ip\_whitelist\_metric\_name](#input\_prefix\_ip\_whitelist\_metric\_name) | Name to be used on IP Whitelist's CLoudwatch metric name as prefix | `string` | `null` | no |
 | <a name="input_prefix_ip_whitelist_rule_group_name"></a> [prefix\_ip\_whitelist\_rule\_group\_name](#input\_prefix\_ip\_whitelist\_rule\_group\_name) | Name to be used on IP Whitelist's rule group name as prefix | `string` | `null` | no |

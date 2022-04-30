@@ -52,6 +52,30 @@ variable "ip_set_list" {
   default     = []
 }
 
+variable "logging_enabled" {
+  description = "A boolean flag to enable/disable Web ACL logging"
+  type        = bool
+  default     = false
+}
+
+variable "logging_destination_type" {
+  description = "The Amazon Kinesis Data Firehose ('kinesis'), Cloudwatch Log log group ('cloudwatch'), or S3 bucket('s3') that you want to associate with the Web ACL"
+  type        = string
+  default     = "cloudwatch"
+}
+
+variable "logging_destination_retention" {
+  type        = number
+  default     = 14
+  description = "Number of days to keep the logs"
+}
+
+variable "logging_destination_kms_key_arn" {
+  description = "The KMS key id for encrypting the logging destination"
+  type        = string
+  default     = null
+}
+
 variable "name" {
   description   = "Name to be used on all resources as prefix"
   type          = string
